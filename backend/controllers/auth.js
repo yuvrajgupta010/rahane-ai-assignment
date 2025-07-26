@@ -1,32 +1,8 @@
 import { comparePassword, hashPassword } from "../helpers/bcrypt.js";
 import { jwtSignToken } from "../helpers/jwt.js";
 import expressValidation from "../helpers/validation.js";
+import SystemLog from "../models/systemLog.js";
 import User from "../models/user.js";
-
-export const signupController = async (req, res, next) => {
-  try {
-    expressValidation(req);
-
-    const { email, password, fullName } = req.body;
-
-    const encryptedPassword = await hashPassword(password);
-
-    const user = new User({
-      email,
-      password: encryptedPassword,
-      fullName,
-    });
-
-    await user.save();
-
-    return res.status(201).json({
-      data: { user: user.toClient() },
-      message: "Account created successfully.",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 export const loginControllers = async (req, res, next) => {
   try {
@@ -42,7 +18,10 @@ export const loginControllers = async (req, res, next) => {
       throw error;
     }
 
-    const token = jwtSignToken({ email, userId: req.user.id });
+    const token = jwtSignToken({
+      userId: req.user.id,
+      userRole: req?.user?.role,
+    });
 
     return res.status(200).json({
       data: {
@@ -53,5 +32,13 @@ export const loginControllers = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    const systemLog = new SystemLog({
+      action: "User Login",
+      userId: req.user.id,
+      details: `User ${req.user.email} logged in successfully.`,
+      adminId: req.user?.createdBy || null,
+    });
+    await systemLog.save();
   }
 };

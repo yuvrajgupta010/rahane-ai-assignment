@@ -19,13 +19,13 @@ app.use(
   cors({
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
-    // origin: process.env.CLIENT_URL,
   })
 );
 app.use(helmet());
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/data");
 
 // Not found
 app.use((req, res, next) => {
