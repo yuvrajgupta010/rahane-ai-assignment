@@ -21,6 +21,7 @@ export const loginControllers = async (req, res, next) => {
     const token = jwtSignToken({
       userId: req.user.id,
       userRole: req?.user?.role,
+      adminId: req?.user?.createdBy,
     });
 
     return res.status(200).json({

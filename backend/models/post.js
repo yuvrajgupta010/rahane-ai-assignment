@@ -22,6 +22,10 @@ const postSchema = new Schema(
       type: Schema.ObjectId,
       ref: "User",
     },
+    adminId: {
+      type: Schema.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

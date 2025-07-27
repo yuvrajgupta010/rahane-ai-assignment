@@ -29,7 +29,6 @@ export const getSystemLogsController = async (req, res, next) => {
 export const getDashboardStatController = async (req, res, next) => {
   try {
     const { userId } = req.jwtPayload;
-    console.log("I am hitting");
     const totalUsers = await User.find({
       createdBy: userId,
     }).countDocuments();

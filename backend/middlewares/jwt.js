@@ -36,11 +36,10 @@ export const authenticateTokenAndAccess = (req, res, next) => {
       } else if (user?.userRole === CONSTANT.ROLE_VIEWER) {
         roleIndex = 2;
       }
-      console.log(`${requestMethod} ${requestPath} roleIndex`, roleIndex);
+      // console.log(`${requestMethod} ${requestPath} roleIndex`, roleIndex);
       // check access of the user
       const isAuthorizedToAccess =
         accessControlCenter[`${requestMethod} ${requestPath}`][roleIndex];
-
       if (!isAuthorizedToAccess) {
         const error = new Error("Unauthorized to access!");
         error.status = 403;
@@ -50,6 +49,7 @@ export const authenticateTokenAndAccess = (req, res, next) => {
 
       req.jwtPayload = user; // Attach payload to request
       // console.log(err, user, "JWT Payload: err, user"); // Debugging line
+
       next();
     });
   } catch (error) {

@@ -7,6 +7,8 @@ const restfulUrls = {
   ADD_NEW_USER: "/user/create-account",
   EDIT_USER: "/user/edit-user",
   DELETE_USER: "/user/delete-user",
+  GET_POSTS: "/user/post",
+  DELETE_POST: "/user/delete-post",
 };
 
 export default restfulUrls;

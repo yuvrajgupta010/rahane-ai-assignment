@@ -6,7 +6,6 @@ export const createAdminUserIfNotExists = async () => {
 
   if (!existingUser) {
     const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
-    console.log(hashedPassword, "hashedPassword");
     await User.create({
       email: process.env.ADMIN_EMAIL,
       password: hashedPassword,

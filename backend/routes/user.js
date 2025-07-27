@@ -6,10 +6,15 @@ import { jsonBodyParser } from "../middlewares/bodyParser.js";
 import User from "../models/user.js";
 
 import {
+  addCommentController,
   createAccountController,
+  createPostController,
+  deletePostController,
   deleteUserController,
+  editPostController,
   editUserController,
   getAllUsersController,
+  getPostsController,
 } from "../controllers/user.js";
 import CONSTANT from "../helpers/constant.js";
 
@@ -60,14 +65,12 @@ userRouter.put(
   "/edit-user",
   [
     body("fullName")
-      .optional()
       .isString()
       .trim()
       .not()
       .isEmpty()
       .withMessage("Please enter your full name"),
     body("email")
-      .optional()
       .trim()
       .isEmail()
       .normalizeEmail()
@@ -82,7 +85,6 @@ userRouter.put(
         req.user = user;
       }),
     body("role")
-      .optional()
       .trim()
       .isIn([CONSTANT.ROLE_ADMIN, CONSTANT.ROLE_EDITOR, CONSTANT.ROLE_VIEWER])
       .withMessage("Role must be one of: admin, editor, viewer"),
@@ -105,6 +107,61 @@ userRouter.put(
       }),
   ],
   deleteUserController
+);
+
+userRouter.get("/post", getPostsController);
+
+userRouter.post(
+  "/post",
+  [
+    body("title").trim().notEmpty().withMessage("Please enter title"),
+    body("description")
+      .trim()
+      .notEmpty()
+      .withMessage("Please provide description"),
+  ],
+  createPostController
+);
+
+userRouter.put(
+  "/post",
+  [
+    body("title").trim().notEmpty().withMessage("Please enter title"),
+    body("description")
+      .trim()
+      .notEmpty()
+      .withMessage("Please provide description"),
+    body("postId")
+      .trim()
+      .notEmpty()
+      .isMongoId()
+      .withMessage("Invalid post ID format."),
+  ],
+  editPostController
+);
+
+userRouter.put(
+  "/delete-post",
+  [
+    body("postId")
+      .trim()
+      .notEmpty()
+      .isMongoId()
+      .withMessage("Invalid post ID format"),
+  ],
+  deletePostController
+);
+
+userRouter.post(
+  "/comment",
+  [
+    body("postId").isMongoId().withMessage("Invalid post ID format"),
+    body("comment")
+      .trim()
+      .notEmpty()
+      .withMessage("Comment not have to be empty"),
+  ],
+  addCommentController
 );
 
 export default userRouter;

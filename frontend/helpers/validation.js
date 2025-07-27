@@ -44,3 +44,8 @@ export const createUserFormValidation = yup.object().shape({
     .required("Plase select mode")
     .oneOf(["edit", "create-new"]),
 });
+
+export const createPostFormValidation = yup.object().shape({
+  title: yup.string().trim().required("Please title of post"),
+  description: yup.string().trim().required("Please description of post"),
+});

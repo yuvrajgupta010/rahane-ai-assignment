@@ -28,7 +28,7 @@ const fetchUsers = async (setState) => {
     if (responseData.status === 200) {
       const data = responseData?.data?.data;
       setState(data?.users);
-      console.log(data?.users);
+      // console.log(data?.users);
     }
   } catch (error) {
     console.error(error?.data?.message);
@@ -42,7 +42,7 @@ const fetchSystemLogs = async (setState) => {
     if (responseData.status === 200) {
       const data = responseData?.data?.data;
       setState(data?.logs);
-      console.log(data?.users);
+      // console.log(data?.users);
     }
   } catch (error) {
     console.error(error?.data?.message);
@@ -79,7 +79,7 @@ const AdminDashboard = (props) => {
     },
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
-      console.log("I am hitting");
+      // console.log("I am hitting");
       try {
         let response;
 
@@ -363,6 +363,7 @@ const AdminDashboard = (props) => {
                 name="email"
                 onBlur={handleBlur}
                 onChange={handleChange}
+                disabled={values.mode === "edit"}
               />
               {errors.email && touched.email && (
                 <p className="text-danger mt-2">{errors.email}</p>
