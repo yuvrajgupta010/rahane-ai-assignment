@@ -25,7 +25,7 @@ export const loginControllers = async (req, res, next) => {
 
     return res.status(200).json({
       data: {
-        user: req.user.toClient(),
+        userDetails: req.user.toClient(),
         accessToken: token,
       },
       message: "Login successfully.",

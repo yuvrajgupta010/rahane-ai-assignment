@@ -23,3 +23,5 @@ export const getSystemLogsController = async (req, res, next) => {
     next(error);
   }
 };
+
+// export const getStatic

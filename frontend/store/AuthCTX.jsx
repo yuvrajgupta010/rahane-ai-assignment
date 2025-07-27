@@ -34,7 +34,7 @@ const AuthContextProvider = (props) => {
       const currentTime = Math.floor(Date.now() / 1000); // current time in seconds
 
       if (payload.exp && payload.exp > currentTime) {
-        setUserDetails(userDetails);
+        setUserDetails(JSON.parse(userDetails));
         setIsAuthenticated(true);
         if (router.pathname === "/") {
           router.push("/dashboard"); // redirect to dashboard if authenticated
@@ -62,8 +62,9 @@ const AuthContextProvider = (props) => {
 
     setIsAuthenticated(true);
     setUserDetails(userDetails);
-    localStorage.setItem("accessToken", JSON.stringify(token));
-    localStorage.setItem("userDetails", userDetails);
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("userDetails", JSON.stringify(userDetails));
+    router.push("/dashboard");
   };
 
   const _logout = () => {

@@ -1,30 +1,53 @@
 import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
+
 import style from "./login.module.css";
+import { useFormik } from "formik";
+import { loginFormValidation } from "@/helpers/validation";
+import { apiInterceptor } from "@/service/axiosClient";
+import restfulUrls from "@/service/restfulUrls";
+import { useAuthCTX } from "@/store/AuthCTX";
+import toast from "react-hot-toast";
 
 const Login = () => {
-  const [inputUsername, setInputUsername] = useState("");
-  const [inputPassword, setInputPassword] = useState("");
+  const { isAuthenticated, _login } = useAuthCTX();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [show, setShow] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { handleChange, handleBlur, handleSubmit, values, errors, touched } =
+    useFormik({
+      validationSchema: loginFormValidation,
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      onSubmit: async (values) => {
+        setIsSubmitting(true);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    await delay(500);
-    console.log(`Username :${inputUsername}, Password :${inputPassword}`);
-    if (inputUsername !== "admin" || inputPassword !== "admin") {
-      setShow(true);
-    }
-    setLoading(false);
-  };
+        try {
+          const response = await apiInterceptor.post(restfulUrls.LOGIN, {
+            email: values.email,
+            password: values.password,
+          });
 
-  const handlePassword = () => {};
-
-  function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+          const responseData = response?.data;
+          if (response.status === 200) {
+            const { accessToken, userDetails } = responseData?.data;
+            _login({
+              token: accessToken,
+              userDetails: userDetails,
+            });
+            toast.success(responseData.message);
+          }
+        } catch (error) {
+          console.error("Login failed", error);
+          toast.error(
+            error?.data?.message || "Login failed. Please try again."
+          );
+        } finally {
+          setIsSubmitting(false);
+        }
+      },
+    });
 
   return (
     <div
@@ -55,41 +78,39 @@ const Login = () => {
         </span>
 
         <div className="h4 mb-2 text-center">Sign In</div>
-        {/* ALert */}
-        {show ? (
-          <Alert
-            className="mb-2"
-            variant="danger"
-            onClose={() => setShow(false)}
-            dismissible
-          >
-            Incorrect username or password.
-          </Alert>
-        ) : (
-          <div />
-        )}
+
         <Form.Group className="mb-2" controlId="username">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type="text"
-            value={inputUsername}
-            placeholder="Username"
-            onChange={(e) => setInputUsername(e.target.value)}
+            name="email"
+            value={values.email}
+            placeholder="admin@rahaneai.com"
+            onBlur={handleBlur}
+            onChange={handleChange}
             required
           />
+          {errors.email && touched.email && (
+            <p className="text-danger mt-2">{errors.email}</p>
+          )}
         </Form.Group>
         <Form.Group className="mb-2" controlId="password">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            value={inputPassword}
+            name="password"
+            value={values.password}
             placeholder="Password"
-            onChange={(e) => setInputPassword(e.target.value)}
+            onBlur={handleBlur}
+            onChange={handleChange}
             required
           />
+          {errors.password && touched.password && (
+            <p className="text-danger mt-2">{errors.password}</p>
+          )}
         </Form.Group>
 
-        {!loading ? (
+        {!isSubmitting ? (
           <Button className="w-100" variant="primary" type="submit">
             Log In
           </Button>
