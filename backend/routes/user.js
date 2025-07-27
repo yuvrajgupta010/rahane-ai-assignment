@@ -1,5 +1,5 @@
 import express from "express";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 import { authenticateTokenAndAccess } from "../middlewares/jwt.js";
 import { jsonBodyParser } from "../middlewares/bodyParser.js";
@@ -73,8 +73,9 @@ userRouter.put(
       .normalizeEmail()
       .withMessage("Please enter a valid email.")
       .custom(async (value, { req }) => {
-        const user = await User.findOne({ email: value });
-        if (user) {
+        const { userId } = req.jwtPayload;
+        const user = await User.findOne({ email: value, createdBy: userId });
+        if (!user) {
           return Promise.reject("Account don't exists with this email!");
         }
 
@@ -89,8 +90,8 @@ userRouter.put(
   editUserController
 );
 
-userRouter.delete(
-  "/delete-user/:userId",
+userRouter.put(
+  "/delete-user",
   [
     body("userId")
       .isMongoId()

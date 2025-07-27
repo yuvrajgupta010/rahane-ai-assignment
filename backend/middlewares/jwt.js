@@ -26,23 +26,23 @@ export const authenticateTokenAndAccess = (req, res, next) => {
       ////////////////////////////////////////
       // check Authorization level
       const requestMethod = req.method;
-      const requestPath = req.path;
+      const requestPath = req.originalUrl.split("?")[0];
       let roleIndex;
 
-      if (user?.role === CONSTANT.ROLE_ADMIN) {
+      if (user?.userRole === CONSTANT.ROLE_ADMIN) {
         roleIndex = 0;
-      } else if (user?.role === CONSTANT.ROLE_EDITOR) {
+      } else if (user?.userRole === CONSTANT.ROLE_EDITOR) {
         roleIndex = 1;
-      } else if (user?.role === CONSTANT.ROLE_VIEWER) {
+      } else if (user?.userRole === CONSTANT.ROLE_VIEWER) {
         roleIndex = 2;
       }
-
+      console.log(`${requestMethod} ${requestPath} roleIndex`, roleIndex);
       // check access of the user
       const isAuthorizedToAccess =
         accessControlCenter[`${requestMethod} ${requestPath}`][roleIndex];
 
       if (!isAuthorizedToAccess) {
-        const error = new Error("Unauthorized to do this action");
+        const error = new Error("Unauthorized to access!");
         error.status = 403;
         throw error;
       }
